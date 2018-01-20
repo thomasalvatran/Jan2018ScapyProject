@@ -4,6 +4,8 @@ from scrapy.spiders import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 # from tovantran.items import TovantranItem
 
+total_post = 0
+
 class MySpider(scrapy.Spider):
         post=0
         def __init__(self, post=None):  #post empty state
@@ -13,9 +15,10 @@ class MySpider(scrapy.Spider):
         name = "tovantran"
         allowed_domains = ["tovantran.com"]
         start_urls = [
-            "http://tovantran.com/blog"    ]
-       
+            "http://tovantran.com/blog" 
+               ]
         def parse(self, response):
+            global total_post
             titles = response.xpath('//h2//a').extract()
             dates = response.xpath('//h4/text()').extract()
             items_date = []
@@ -25,7 +28,9 @@ class MySpider(scrapy.Spider):
               # yield (date)
             for title in titles:
                 print(spide.post)
-                spide.post += 1
+                print ("==global== " + str(total_post))  #total_post is global variable and post is class argument
+                total_post += 1  #global var
+                spide.post += 1  #spider arguments
                 date = items_date.pop(0)
                 yield {'Post': '{:>3}'.format(spide.post), 'Date': '{:>25}'.format(date),  'Title':title }
             relative_next_url = response.xpath('//a[@class="next"]/@href').extract_first()  # next page start over 
